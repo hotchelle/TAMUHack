@@ -32,7 +32,14 @@ const Homescreen = ({ navigation } ) => {
       )}
       />
 
+      <View>
+        <Button
+        title= 'Create Schedule'
+        onPress={() => navigation.navigate("ScheduleManager")}
+        />
+      </View>
     </View>
+    
     
    
 
