@@ -1,271 +1,126 @@
-import { Text, StyleSheet, View, Button, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native';
 import * as Adhan from 'adhan';
+import image from '../assets/mosque.png';
 
-function timeDifference(startTime, endTime) {
-  let start = new Date("01/01/2000 " + startTime);
-  let end = new Date("01/01/2000 " + endTime);
-  let diff = end - start;
-  return diff / (1000 * 60);
-}
+
+const HomeScreen = ({navigation}) => {
+  const [prayerTimes, setPrayerTimes] = useState({});
+  const [athanData, setAthanData] = useState({});
+
+  useEffect(() => {
+    let coordinates = new Adhan.Coordinates(30.61198, -96.34224);
+    let params = new Adhan.CalculationMethod.NorthAmerica();
+    let date = new Date();
+    let prayerTimes = new Adhan.PrayerTimes(coordinates, date, params);
+    setPrayerTimes(prayerTimes);
+    let times = {
+      "Fajr": prayerTimes.fajr,
+      "Sunrise": prayerTimes.sunrise,
+      "Dhuhr": prayerTimes.dhuhr,
+      "Asr": prayerTimes.asr,
+      "Maghrib": prayerTimes.maghrib,
+      "Isha": prayerTimes.isha
+    };
+    setAthanData(times);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+    </ImageBackground>
+      <View style={styles.cardContainer}>
+        <Text style={{
+          fontSize: 20,
+          fontWeight: 'bold',
+          color: 'black',
+          textAlign: 'center',
+          
+        }}>{new Date().toDateString()}</Text>
+      </View>
+      {Object.keys(athanData).map(prayer => (
+        <View key={prayer} style={styles.row}>
+          <Text style={styles.prayer}>{prayer}</Text>
+          <Text style={styles.time}>
+            {athanData[prayer].toLocaleTimeString()}
+          </Text>
+        </View>
+      ))}
+      <TouchableOpacity style={styles.button} onPress = {() => navigation.navigate("Schedule")} >
+        <Text style={styles.buttonText}>Import Schedule</Text>
+      </TouchableOpacity>
+      
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
     alignItems: 'center',
     justifyContent: 'center',
+    
+
   },
-  classList: {
-    backgroundColor: '#fff',
-    padding: 20,
-    margin: 10,
-    borderRadius: 5,
+  
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginVertical: 10
   },
-  classText: {
-    fontSize: 18,
+  prayer: {
     fontWeight: 'bold',
+    fontSize: 20,
+    color: 'black',
+    width: '40%',
+    textAlign: 'left',
   },
-  classDetail: {
+  time: {
+    fontWeight: 'normal',
+    fontSize: 20,
+    color: 'black',
+    width: '40%',
+    textAlign: 'right',
+  },
+  button: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    marginBottom: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '80%',
+    marginHorizontal: 30,
+
+
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
     fontSize: 16,
-    marginTop: 5,
   },
+  cardContainer: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+    width: '100%',
+    height: '90%',
+    resizeMode: "cover",
+  },
+  
+ 
+
 });
 
-const Homescreen = ({navigation}) => {
-    const [color,setColor] = useState('white');
-    const [period, setPeriod] = useState();
-    const classes = [
-        {
-          Class: "CSE 3318 Algorithms and Data Structures",
-          Section: 1,
-          day: "T,TH",
-          start: "9:30 AM",
-          end: "10:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "GACB 103",
-          Instructor: "Alexandra Stefan"
-        },
-        {
-          Class: "CSE 3318 Algorithms and Data Structures",
-          Section: 3,
-          day: "M,W",
-          start: "4:00 PM",
-          end: "5:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "PKH 111",
-          Instructor: "Bob Weems"
-        },
-        {
-          Class: "CSE 3318 Algorithms and Data Structures",
-          Section: 2,
-          day: "T,TH",
-          start: "11:00 AM",
-          end: "12:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "GACB 103",
-          Instructor: "Alexandra Stefan"
-        },
-        {
-          Class: "CSE 1325 OBJECT-ORIENTED PROGRAMMING ",
-          Section: 1,
-          day: "T,TH",
-          start: "11:00 AM",
-          end: "12:30",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 202",
-          Instructor: "George Fowler Rice"
-        },
-        {
-          Class: "CSE 1325 OBJECT-ORIENTED PROGRAMMING ",
-          Section: 2,
-          day: "T,TH",
-          start: "8:00 AM",
-          end: "9:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 202",
-          Instructor: "George Fowler Rice"
-        },
-        {
-          Class: "CSE 1325 OBJECT-ORIENTED PROGRAMMING ",
-          Section: 3,
-          day: "T,TH",
-          start: "9:30 AM",
-          end: "10:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 202",
-          Instructor: "George Fowler Rice"
-        },
-        {
-          Class: "CSE 2312 Computer Organization & Assembly Language Programming",
-          Section: 1,
-          day: "T,TH",
-          start: "8:00 AM",
-          end: "9:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "ERB 129",
-          Instructor: "Jason Losh"
-        },
-        {
-          Class: "CSE 2312 Computer Organization & Assembly Language Programming",
-          Section: 2,
-          day: "T,TH",
-          start: "5:30 PM",
-          end: "6:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 202",
-          Instructor: "Dianqi Han"
-        },
-        {
-          Class: "CSE 2312 Computer Organization & Assembly Language Programming",
-          Section: 3,
-          day: "M,W",
-          start: "2:30 PM",
-          end: "3:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 112",
-          Instructor: "Todd Rosenkrantz"
-        },
-        {
-          Class: "CSE 2312 Computer Organization & Assembly Language Programming",
-          Section: 4,
-          day: "M,W",
-          start: "1:00 PM",
-          end: "2:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 112",
-          Instructor: "Todd Rosenkrantz"
-        },
-        {
-          Class: "CSE 3380 Linear Algebra For CSE",
-          Section: 1,
-          day: "M,W,F",
-          start: "11:00 AM",
-          end: "11:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 311",
-          Instructor: "Alex Jon Dilhoff"
-        },
-        {
-          Class: "CSE 3380 Linear Algebra For CSE",
-          Section: 2,
-          day: "M,W",
-          start: "1:00 PM",
-          end: "2:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "NH 111",
-          Instructor: "Alex Jon Dilhoff"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 1,
-          day: "M,W",
-          start: "1:00 PM",
-          end: "2:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 221",
-          Instructor: "Aera Leboulluec"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 2,
-          day: "M,W",
-          start: "2:30 PM",
-          end: "3:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 221",
-          Instructor: "Aera Leboulluec"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 3,
-          day: "T,TH",
-          start: "12:30 PM",
-          end: "1:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 208",
-          Instructor: "Rosie Kallie"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 4,
-          day: "M,W",
-          start: "5:30 PM",
-          end: "6:50",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 210",
-          Instructor: "Ukesh Chawal"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 5,
-          day: "M,W",
-          start: "4:00 PM",
-          end: "5:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 210",
-          Instructor: "Xin Liu"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 6,
-          day: "T,TH",
-          start: "11:00 AM",
-          end: "12:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 208",
-          Instructor: "Emma Yang"
-        },
-        {
-          Class: "IE 3301 ENGINEERING PROBABLITY",
-          Section: 8,
-          day: "T,TH",
-          start: "2:00 PM",
-          end: "3:20",
-          Meetingdates: "01/17/23-05/02/2023",
-          Room: "WH 208",
-          Instructor: "Rosie Kallie"
-        }
-      ]
-
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={classes}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-          // style={{ backgroundColor: item === period ? 'white' : 'red'}}
-          onPress={ () => {
-            setColor(item === period ? 'red' : 'white')
-            setPeriod(item)
-            //console.log(item)
-            console.log(period)
-            console.log(color)
-          } }
-          >
-          <View style= {item === period ? {backgroundColor: 'white'} : {backgroundColor: 'red'} }
-          onPress={ () => setPeriod(item)}
-          >
-            <Text style={styles.classText}>{item.Class} - Section {item.Section}</Text>
-            <Text style={styles.classDetail}>{item.day}, {item.start} - {item.end}</Text>
-            <Text style={styles.classDetail}>{item.Meetingdates}, {item.Room}, {item.Instructor}</  Text>
-          </View>
-          </TouchableOpacity>
-          
-
-          
-        )}
-        keyExtractor={item => item.Class + item.Section}
-      />
-
-      <View>
-        <Button
-        title= 'Create Schedule'
-        onPress={() => navigation.navigate("ScheduleManager")}
-        />
-      </View>
-    </View>
-  );
-}
-
-export default Homescreen;
+export default HomeScreen;

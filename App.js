@@ -2,18 +2,19 @@ import { View } from "react-native";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import HomeScreen from "./src/Homescreen";
-import ScheduleManagerScreen from "./src/ScheduleManagerScreen";
+import ScheduleScreen from "./src/Schedule";
+import RateScreen from "./src/Rate";
 
 const navigator = createStackNavigator(
   {
     Home: HomeScreen,
-    ScheduleManager: ScheduleManagerScreen,
+    Schedule: ScheduleScreen,
+    Rating: RateScreen
   }
   ,
   {
     initialRouteName: "Home",
     defaultNavigationOptions: {
-      title: "App",
     },
   }
 );
